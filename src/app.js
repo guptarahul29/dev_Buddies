@@ -1,37 +1,28 @@
 const express = require("express");
+const { userAuth,adminAuth } = require("./middlewares/auth");
 
-const apppps = express();
+const app = express();
 
-// apppps.use("/add",(req,res)=>{
-//     res.send("start")
-// })
+// const {userAuth} = require("./middlewares/auth.js")
 
+//Handle Auth midddleware for all GET , POST .... Requests
+app.use("/user",userAuth);
 
-// apppps.use("/ab",(req,res)=>{
-//     res.send("hello from server.......");
+app.use("/admin",adminAuth,(req,res)=>{
+    res.send("adimn data");
+})
 
-// });
+// after passing from /user next() it comes belove code
+app.get("/user/alldata",(req,res)=>{
+    res.send("you get all data");
+});
 
-// apppps.use("/abcd",(req,res)=>{
-//     res.send("hello hello, hello")
-// })
-
-
-apppps.use("/user",
-    (req,res,next)=>{
-    res.send("1st send message ....");
-    next();
-},(req,res,next)=>{
-    next();
-    // res.send("2nd send message ....");
-
-},(req,res,next)=>{
-    next();
-    // res.send("3rd send message")
+app.get("/user/delete",(req,res)=>{
+    res.send("Delete your data");
 })
 
 
-apppps.listen(7777,()=>{
+app.listen(7777,()=>{
     console.log("Succesfully port to 7777");
     
 });
