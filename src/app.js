@@ -1,25 +1,28 @@
 const express = require("express");
-const { userAuth,adminAuth } = require("./middlewares/auth");
 
 const app = express();
 
-// const {userAuth} = require("./middlewares/auth.js")
-
-//Handle Auth midddleware for all GET , POST .... Requests
-app.use("/user",userAuth);
-
-app.use("/admin",adminAuth,(req,res)=>{
-    res.send("adimn data");
-})
-
-// after passing from /user next() it comes belove code
-app.get("/user/alldata",(req,res)=>{
-    res.send("you get all data");
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        //log your error
+        res.status(600).send("something is wrong")
+    }
 });
 
-app.get("/user/delete",(req,res)=>{
-    res.send("Delete your data");
+app.get("/user",(err,req,res)=>{
+    //here we r rendomly throwing errors
+    throw new Error("asdfghj")
 })
+
+
+// learn try catch 
+
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        //log your error
+        res.status(600).send("something is wrong")
+    }
+});
 
 
 app.listen(7777,()=>{
