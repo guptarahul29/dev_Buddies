@@ -4,14 +4,13 @@ const userAuth = (req,res,next)=>{
 
     if(!isauthorized)
     {
-        res.send("unathorized user ")
+        res.send("unathorized user ");
     }
     else
     {
         console.log("passing next");
         next();
     }
-
 };
 
 const adminAuth = (req,res,next)=>{
@@ -20,17 +19,14 @@ const adminAuth = (req,res,next)=>{
 
     if(!isauthorized)
     {
-        res.send("unathorized admin ")
+        res.send("unathorized admin ");
     }
     else
     {
         console.log("passing next");
         next();
     }
-
 };
-
-
 
 module.exports ={
     userAuth,

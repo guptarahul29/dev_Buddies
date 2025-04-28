@@ -8,16 +8,16 @@ const userSchema = new mongoose.Schema({
         type : String
     },
     email :{
-        type :String
+        type : String
     },
     password : {
         type : String
     },
     age :{
-        type:Number
+        type : Number
     },
     gender : {
-        type:String
+        type : String
     }
 
 });

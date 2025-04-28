@@ -16,7 +16,7 @@ app.post("/signup",async(req,res)=>{
     });
     try{
         await user.save();
-        res.send("data store....")
+        res.send("data store....");
     }
     catch{
         res.status(400).send("erorrrrrrr")
