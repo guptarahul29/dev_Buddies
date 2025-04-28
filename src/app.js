@@ -42,33 +42,64 @@ app.get("/feed",async (req,res)=>{
     catch(err){
             res.send("Something wend wrong")
     }
+});
+
+
+// delete user by ID
+app.delete("/users",async (req,res)=>{
+    const userId = req.body.userId;
+    try{
+        const user = await User.findByIdAndDelete({ _id : userId });
+
+        // const user = await User.findByIdAndDelete(userId);
+        res.send("deleted succesfully")
+    }
+    catch(err){
+        res.send("something wend wrong")
+    }
+});
+
+//
+app.patch("/users",async (req,res)=>{
+    const userId =req.body.userId;
+    const data =req.body;
+
+    try{
+        const user = await User.findByIdAndUpdate({_id : userId}, data, {
+            returnDocument : "after",
+        });
+        // res.send("update succesfully")
+        res.send(user)
+    }
+    catch(err){
+
+    }
 })
 
 
-
-// app.post("/signup",async(req,res)=>{
+app.post("/signup",async(req,res)=>{
     
-//     console.log(req.body);
-//     const user = new User(req.body);
+    console.log(req.body);
+    const user = new User(req.body);
     
-// //     const user =new User({
-// //         firstName:"Ram",
-// //         lastName:"gg",
-// //         age:20,
-// //         email:"ram@gmail.com"
-// //     }
-// // );
-//     try{
-//         await user.save();
-//         res.send("data store....");
+//     const user =new User({
+//         firstName:"Ram",
+//         lastName:"gg",
+//         age:20,
+//         email:"ram@gmail.com"
 //     }
-//     catch{
-//         res.status(400).send("erorrrrrr")
-//     }
+// );
+    try{
+        await user.save();
+        res.send("data store....");
+    }
+    catch{
+        res.status(400).send("erorrrrrr")
+    }
 
     
 
-// });
+});
  
 
 
