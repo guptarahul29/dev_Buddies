@@ -6,20 +6,31 @@ const connectDB = require("./config/database.js")
 const app = express();
 const User =require("./models/user.js");
 
+app.use(express.json());
+
+
+
 app.post("/signup",async(req,res)=>{
     
-    const user =new User({
-        firstName:"Ram",
-        lastName:"gg",
-        age:20,
-        email:"ram@gmail.com"
-    });
+    console.log(req.body);
+    const user = new User(req.body);
+    
+
+
+
+//     const user =new User({
+//         firstName:"Ram",
+//         lastName:"gg",
+//         age:20,
+//         email:"ram@gmail.com"
+//     }
+// );
     try{
         await user.save();
         res.send("data store....");
     }
     catch{
-        res.status(400).send("erorrrrrrr")
+        res.status(400).send("erorrrrrr")
     }
 
     
