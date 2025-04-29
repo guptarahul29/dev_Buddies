@@ -65,6 +65,19 @@ app.patch("/users",async (req,res)=>{
     const data =req.body;
 
     try{
+        const allowUpdates=[
+           "userId", "firstName","lastName","age","password","image","skills"
+        ];
+        const isupdateAllow= Object.keys(data).every((k)=>
+        allowUpdates.includes(k)
+        );
+        if(!isupdateAllow){
+            res.status(400).send("Update not allowed");
+        }
+        if(data?.skills.length > 4){
+            throw new Error("not be more than 4");
+        }
+
         const user = await User.findByIdAndUpdate({_id : userId}, data, {
             returnDocument : "after",
             runValidators: true,
@@ -73,6 +86,7 @@ app.patch("/users",async (req,res)=>{
         res.send(user)
     }
     catch(err){
+        res.send("not mmmmore")
 
     }
 })

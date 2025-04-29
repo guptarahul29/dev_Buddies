@@ -1,5 +1,5 @@
 const mongoose =require("mongoose");
-
+const validator=require("validator");
 
 
 const userSchema = new mongoose.Schema({
@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema({
         type : String,
         required: true,
         unique : true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("in valid email type " +value); 
+            }
+        }
     },
     password : {
         type : String,
@@ -26,6 +31,13 @@ const userSchema = new mongoose.Schema({
     },
     skills :{
         type : [],
+        // validate: {
+        //     validator: function (value) {
+        //       return value.length <= 4;
+        //     },
+        //     message: "You can specify up to 4 skills only"
+        //   }
+       
     },
     image :{
         type:String,
