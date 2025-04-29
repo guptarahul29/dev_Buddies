@@ -67,6 +67,7 @@ app.patch("/users",async (req,res)=>{
     try{
         const user = await User.findByIdAndUpdate({_id : userId}, data, {
             returnDocument : "after",
+            runValidators: true,
         });
         // res.send("update succesfully")
         res.send(user)
@@ -93,8 +94,9 @@ app.post("/signup",async(req,res)=>{
         await user.save();
         res.send("data store....");
     }
-    catch{
-        res.status(400).send("erorrrrrr")
+    catch(err){
+        // res.send(user),
+        res.status(400).send("something went wrong" +err.message)
     }
 
     
