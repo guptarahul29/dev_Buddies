@@ -9,6 +9,7 @@ const {signUPDataValidation} = require("./utils/validation.js");
 const bcrypt = require("bcrypt")
 const cookieParser = require("cookie-parser");
 const jwt =require("jsonwebtoken");
+const {userAuth} = require("./middlewares/auth.js"); 
 
 app.use(express.json());
 app.use(cookieParser()); 
@@ -53,8 +54,6 @@ app.delete("/users",async (req,res)=>{
     const userId = req.body.userId;
     try{
         const user = await User.findByIdAndDelete({ _id : userId });
-
-        // const user = await User.findByIdAndDelete(userId);
         res.send("deleted succesfully")
     }
     catch(err){
@@ -142,44 +141,22 @@ app.post("/signup",async(req,res)=>{
 
 });
 
-app.get("/profile",async (req,res)=>{
-    // const {firstName,lastName,email,age,skills} = req.body;
-
+app.get("/profile",userAuth,async (req,res)=>{
+    
     try{
-        const cookies = req.cookies;
-        const { token }=cookies;
-        if(!token){
-            throw new Error("Invalid Token");
-        }
-    
-        const decodedMessage = await jwt.verify(token, "Rahul@1234")
-        // console.log(decodedMessage);
-    
-        const { _id} = decodedMessage;
-        // console.log("This is my login User = " + _id)
-    
-        const user = await User.findById(_id);
-        if(!user){
-            throw new Error("User not founded");
-        }
-        res.send(user);
-    
-        // console.log(cookies);
-        res.send("Reading cookies")
+        const user = req.user  ;
+       
+        res.send(user);        
     }
     catch(err){
         res.send("something wend wrong : " +err.message)
     }
-    
-
-    // try{
-
-    //     }
-    // catch(err){
-
-    // }
-
 });
+
+app.post("/sendConnectionRequest",userAuth,async(req,res)=>{
+    const user =req.user;
+        res.send(user.firstName + "  respond send");
+})
 
 
 app.post("/login",async(req,res)=>{
@@ -195,10 +172,12 @@ app.post("/login",async(req,res)=>{
         if(ispasswordValid){
 
             // create JWT token
-           const token = await jwt.sign({ _id: user._id}, "Rahul@1234");
+           const token = await jwt.sign({ _id: user._id}, "RAHUL@1234",{ expiresIn :"1d" }) 
             console.log(token);
 
-            res.cookie("token", token);
+            res.cookie("token", token,{
+                expires: new Date(Date.now()+8 * 3600000)
+            });
             res.send("Login Succesfully")
             
 
