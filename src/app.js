@@ -5,9 +5,13 @@ const express = require("express");
 const connectDB = require("./config/database.js")
 const app = express();
 const User =require("./models/user.js");
+const {signUPDataValidation} = require("./utils/validation.js");
+const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser");
+const jwt =require("jsonwebtoken");
 
 app.use(express.json());
-
+app.use(cookieParser()); 
 //find all Users
 app.get("/users", async (req, res)=>{
 
@@ -43,7 +47,6 @@ app.get("/feed",async (req,res)=>{
             res.send("Something wend wrong")
     }
 });
-
 
 // delete user by ID
 app.delete("/users",async (req,res)=>{
@@ -94,8 +97,7 @@ app.patch("/users",async (req,res)=>{
 
 app.post("/signup",async(req,res)=>{
     
-    console.log(req.body);
-    const user = new User(req.body);
+   
     
 //     const user =new User({
 //         firstName:"Ram",
@@ -105,16 +107,109 @@ app.post("/signup",async(req,res)=>{
 //     }
 // );
     try{
+        //validation pf data 
+        // function call from utils/validation
+        signUPDataValidation(req);
+// taking this datas only 
+        const {firstName,lastName,password,email} = req.body
+
+        // password encrypt 
+        // package i from npm 
+        const passwordHash = await bcrypt.hash(password,10);
+
+        // creationg new instance of the User Model
+        // console.log(req.body);
+        // const user = new User(req.body); // this not as good so..
+        const user= new User({
+            firstName,
+            lastName,
+            password: passwordHash,
+            email
+        })
+
+
+        
+
         await user.save();
         res.send("data store....");
     }
     catch(err){
         // res.send(user),
-        res.status(400).send("something went wrong" +err.message)
+        res.status(400).send("something went wrong : " +err.message)
     }
 
     
 
+});
+
+app.get("/profile",async (req,res)=>{
+    // const {firstName,lastName,email,age,skills} = req.body;
+
+    try{
+        const cookies = req.cookies;
+        const { token }=cookies;
+        if(!token){
+            throw new Error("Invalid Token");
+        }
+    
+        const decodedMessage = await jwt.verify(token, "Rahul@1234")
+        // console.log(decodedMessage);
+    
+        const { _id} = decodedMessage;
+        // console.log("This is my login User = " + _id)
+    
+        const user = await User.findById(_id);
+        if(!user){
+            throw new Error("User not founded");
+        }
+        res.send(user);
+    
+        // console.log(cookies);
+        res.send("Reading cookies")
+    }
+    catch(err){
+        res.send("something wend wrong : " +err.message)
+    }
+    
+
+    // try{
+
+    //     }
+    // catch(err){
+
+    // }
+
+});
+
+
+app.post("/login",async(req,res)=>{
+    try{
+        const {email,password} = req.body;
+         const user = await User.findOne({email:email})
+
+        if(!user){
+            throw new Error("User id is not present")
+        }
+          const ispasswordValid = bcrypt.compare(password, user.password);
+
+        if(ispasswordValid){
+
+            // create JWT token
+           const token = await jwt.sign({ _id: user._id}, "Rahul@1234");
+            console.log(token);
+
+            res.cookie("token", token);
+            res.send("Login Succesfully")
+            
+
+        }
+        else {
+            throw new Error("Password not Match ");
+        }
+    }
+    catch(err){
+        res.status(400).send("Something Went Wrong " +err.message)
+    }8
 });
  
 
